@@ -26,6 +26,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'sheerun/vim-polyglot'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'derekwyatt/vim-scala'
+Plug 'https://github.com/alok/notational-fzf-vim'
 call plug#end()
 
 " Handle .swp files
@@ -54,7 +55,7 @@ set clipboard=unnamed
 " Hide menus and toolbar
 set guioptions-=m
 set guioptions-=T " Set to nicer font
-set guifont=Monaco:h13
+set guifont=Monaco:h20
 
 " Use unix file format instead of windows
 set ff=unix
@@ -286,6 +287,36 @@ nmap <silent> gr <Plug>(coc-references)
 xmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format-selected)
 
+" Apply AutoFix to problem on the current line.
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
+  else
+    execute '!' . &keywordprg . " " . expand('<cword>')
+  endif
+endfunction
+
+" Use tab for trigger completion with characters ahead and navigate.
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
 " Show JSON comments
 autocmd FileType json syntax match Comment +\/\/.\+$+
 
@@ -293,3 +324,8 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
 " vim-scala
 "---------------------------------------
 au BufRead,BufNewFile *.sbt set filetype=scala
+
+"---------------------------------------
+" notational-fzf-vim
+"---------------------------------------
+let g:nv_search_paths = ['~/Work/notes']
